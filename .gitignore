@@ -44,6 +44,5 @@ cmake-build-relwithdebinfo
 /out
 /temp
 /build
-/deps
 /bin
 /vsthost
