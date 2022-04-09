@@ -20,6 +20,7 @@
 * Code refactoring. It's too old and shit, so refactoring is required.
 * UI Code reimpl to NanoVG/Better framework
 * New UI Impl (design for new UI coming soon.)
+* Linux and macOS port
 
 ---
 
