@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{80ff4ab8-6ec9-44df-a7fb-c30ee0586e94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{2a275838-bea0-4522-b2bb-80e5057773d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Algoritm">
+      <UniqueIdentifier>{f3ab6683-0e47-48c5-89d8-ee77f3170ef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\musor">
+      <UniqueIdentifier>{c3872840-6b58-4dab-81a6-91bcb447431a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\presets">
+      <UniqueIdentifier>{0c9d56eb-2a3a-4f1b-963e-5d9612bea6fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\validiaton check">
+      <UniqueIdentifier>{1fa04161-31f2-4388-91a4-e0ec20a97eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Algoritm2">
+      <UniqueIdentifier>{49052ac5-97f8-4f3e-951c-3a35fff87880}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Include\VST2_SDK\public.sdk\source\vst2.x\vstplugmain.cpp" />
+    <ClCompile Include="main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="main_UI.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="compressor.cpp">
+      <Filter>Sources\musor</Filter>
+    </ClCompile>
+    <ClCompile Include="PresetLoader.cpp">
+      <Filter>Sources\presets</Filter>
+    </ClCompile>
+    <ClCompile Include="main_Process.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SatAlg.cpp">
+      <Filter>Sources\Algoritm2</Filter>
+    </ClCompile>
+    <ClCompile Include="main_PresetList.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseEffect.h" />
+    <ClInclude Include="SoftDistortion.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftClipping.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="HardDistortion.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="HardClipping.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="BitCrusher.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="FoldBack.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="compressor.hpp">
+      <Filter>Sources\musor</Filter>
+    </ClInclude>
+    <ClInclude Include="DiestressorPresetFormat.h">
+      <Filter>Sources\presets</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvelopeDetector.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="TiltEq.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="Sincrusher.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="musor.h" />
+    <ClInclude Include="Validator.h">
+      <Filter>Sources\validiaton check</Filter>
+    </ClInclude>
+    <ClInclude Include="CompressorA.h">
+      <Filter>Sources\Algoritm</Filter>
+    </ClInclude>
+    <ClInclude Include="SatAlg.h">
+      <Filter>Sources\Algoritm2</Filter>
+    </ClInclude>
+    <ClInclude Include="CompAlg.h">
+      <Filter>Sources\Algoritm2</Filter>
+    </ClInclude>
+    <ClInclude Include="TempBuffers.h">
+      <Filter>Sources\Algoritm2</Filter>
+    </ClInclude>
+    <ClInclude Include="TiltEQAlg.h">
+      <Filter>Sources\Algoritm2</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvelopeDetectorAlg.h">
+      <Filter>Sources\Algoritm2</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiComboMod.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
