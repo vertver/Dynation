@@ -12,3 +12,19 @@
   <strong>For now it's open-source, yeah.</sub>
 </div>
 
+
+---
+
+## *TODO*
+
+* Code refactoring. It's too old and shit, so refactoring is required.
+* UI Code reimpl to NanoVG/Better framework
+* New UI Impl (design for new UI coming soon.)
+
+---
+
+## *Why?*
+
+<h1 align="center">Because I can. Really.</h1>
+
+---
