@@ -54,9 +54,10 @@ public:
 
     std::string_view GetParameterSymbol(const int32_t Index)
     {
+        std::string_view ReturnString = "";
         std::visit([&](auto&& arg) {
             using U = std::decay_t<decltype(arg)>;
-            return TypeConverter<U>::GetSymbol();
+            ReturnString = TypeConverter<U>::GetSymbol();
             }, Parameters[Index]);
 
         return "";
@@ -64,12 +65,13 @@ public:
 
     std::string GetParameterValueString(const int32_t Index)
     {
+        std::string ReturnString = "";
         std::visit([&](auto&& arg) {
             using U = std::decay_t<decltype(arg)>;
-            return TypeConverter<U>::GetValueString(std::get<U>(Parameters[Index]));
+            ReturnString = TypeConverter<U>::GetValueString(std::get<U>(Parameters[Index]));
             }, Parameters[Index]);
 
-        return "";
+        return ReturnString;
     }
 
     void SetParameterRawPtr(const int32_t Index, void* NewLocation)
