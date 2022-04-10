@@ -46,7 +46,7 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 		{ 1.f,								{ "1 pump gain",		static_cast<void*>(&ThisState.FirstCompressor.PumpGain) } },
 		{ 0.f,								{ "1 analog submix",	static_cast<void*>(&ThisState.FirstCompressor.AnalogSubmix) } },
 
-				// First compressor
+		// Second compressor
 		{ CompressorStatus::Disabled,		{ "2 status",			static_cast<void*>(&ThisState.SecondCompressor.CompStatus) } },
 		{ CompressorMode::BasicCompressor,	{ "2 mode",				static_cast<void*>(&ThisState.SecondCompressor.CompStatus) } },
 		{ static_cast<int16_t>(0),			{ "2 reserved",			static_cast<void*>(&ThisState.SecondCompressor.reserved2) } },
@@ -85,8 +85,6 @@ DynationPlugin::Reset()
 {
 
 }
-
-#include <windows.h>
 
 bool
 DynationPlugin::Initialize(PluginNotifier* InNotifier)
@@ -136,38 +134,40 @@ DynationPlugin::SetBlockSize(int32_t BlockSize)
 	this->BlockSize = BlockSize;
 }
 
-std::string 
+std::string_view
 DynationPlugin::GetParameterNameString(int32_t ParameterIndex)
 {
-	return "";
+	return Parameters->GetParameterName(ParameterIndex);
 }
 
-std::string 
+std::string_view
 DynationPlugin::GetParameterLabelString(int32_t ParameterIndex)
 {
-	return "";
+	return Parameters->GetParameterSymbol(ParameterIndex);
 }
 
 std::string
 DynationPlugin::GetParameterValueString(int32_t ParameterIndex)
 {
-	return "";
+	return Parameters->GetParameterValueString(ParameterIndex);
 }
 
 int32_t 
 DynationPlugin::GetParametersCount()
 {
-	return 0;
+	return Parameters->GetParamsCount();
 }
 
 float 
 DynationPlugin::GetParameter(int32_t ParameterIdx)
 {
-	return 0.f;
+	float OutValue = 0.f;
+	Parameters->GetValueNormalized(ParameterIdx, OutValue);
+	return OutValue;
 }
 
 void 
 DynationPlugin::SetParameter(int32_t ParameterIdx, float ParameterValue)
 {
-
+	Parameters->SetValueNormalized(ParameterIdx, ParameterValue);
 }

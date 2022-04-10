@@ -111,24 +111,24 @@ struct TypeConverter<float>
 };
 
 template<>
-struct TypeConverter<long>
+struct TypeConverter<int16_t>
 {
     static std::string_view GetSymbol()
     {
         return "";
     }
 
-    static std::string GetValueString(long Value)
+    static std::string GetValueString(int16_t Value)
     {
         return std::to_string(Value);
     }
 
-    static float normalize(long val)
+    static float normalize(int16_t val)
     {
         return 0.f;
     }
 
-    static long denormalize(float val)
+    static int16_t denormalize(float val)
     {
         return 0;
     }

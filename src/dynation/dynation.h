@@ -164,8 +164,8 @@ public:
 	virtual void SetBlockSize(int32_t BlockSize) override;
 
 public:
-	virtual std::string GetParameterNameString(int32_t ParameterIndex) override;
-	virtual std::string GetParameterLabelString(int32_t ParameterIndex) override;
+	virtual std::string_view GetParameterNameString(int32_t ParameterIndex) override;
+	virtual std::string_view GetParameterLabelString(int32_t ParameterIndex) override;
 	virtual std::string GetParameterValueString(int32_t ParameterIndex) override;
 
 public:

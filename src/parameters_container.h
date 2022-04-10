@@ -172,12 +172,10 @@ public:
             bool isVisited = true;
             std::visit([&](auto&& arg) {
                 using U = std::decay_t<decltype(arg)>;
-                OutValue = TypeConverter<U>::normalize(std::get<U>(Parameters[Index]), args);
+                OutValue = TypeConverter<U>::normalize(std::get<U>(Parameters[Index]), args...);
                 }, Parameters[Index]);
         }
         catch (const std::exception& exc) {
-            // Don't care what exactly exception currently happen, just print to log something
-            PLUGINS_LOG(exc.what());
             return false;
         }
 
@@ -195,7 +193,7 @@ public:
             bool isVisited = true;
             std::visit([&](auto&& arg) {
                 using U = std::decay_t<decltype(arg)>;
-                Parameters[Index] = TypeConverter<U>::denormalize(OutValue, args);
+                Parameters[Index] = TypeConverter<U>::denormalize(OutValue, args...);
 
                 U* RawPtr = reinterpret_cast<U*>(ParametersInfo[Index].ParameterRawPointer);
                 if (RawPtr != nullptr) {
@@ -204,8 +202,6 @@ public:
                 }, Parameters[Index]);
         }
         catch (const std::exception& exc) {
-            // Don't care what exactly exception currently happen, just print to log something
-            PLUGINS_LOG(exc.what());
             return false;
         }
 
