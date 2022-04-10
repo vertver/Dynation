@@ -6,6 +6,7 @@
 ***************************************************************************/
 #pragma once
 
+using log_gain = strong::type<float, struct log_gain_>;
 using volume_gain = strong::type<float, struct volume_gain_>;
 
 template<typename T>
@@ -115,6 +116,36 @@ struct TypeConverter<int16_t>
     }
 };
 
+#define ParamToLog(x, mn, mx) (exp(log(mn) + (x) * (log(mx) - log(mn))))
+#define LogToParam(x, mn, mx) ((log(x) - log(mn)) / (log(mx) - log(mn)))
+
+#define ParamToLin(x, mn, mx) ((mn) + (x) * ((mx) - (mn)))
+#define LinToParam(x, mn, mx) (((x) - (mn)) / ((mx) - (mn)))
+
+template<>
+struct TypeConverter<log_gain>
+{
+    static std::string_view GetSymbol()
+    {
+        return "dB";
+    }
+
+    static std::string GetValueString(log_gain val)
+    {
+        return std::to_string(lin2dB(val.value_of()));
+    }
+
+    static float normalize(log_gain val, const float minv = -24.f, const float maxv = 24.f)
+    {
+        return LinToParam(val.value_of(), minv, maxv);
+    }
+
+    static log_gain denormalize(float val, const float minv = -24.f, const float maxv = 24.f)
+    {
+        return log_gain(ParamToLin(val, dB2lin(minv), dB2lin(maxv)));
+    }
+};
+
 template<>
 struct TypeConverter<volume_gain>
 {
@@ -125,16 +156,18 @@ struct TypeConverter<volume_gain>
 
     static std::string GetValueString(volume_gain val)
     {
-        return std::to_string(val.value_of());
+        return std::to_string(lin2dB(val.value_of()));
     }
 
-    static float normalize(volume_gain val)
+    static float normalize(volume_gain val, const float minv = -24.f, const float maxv = 24.f)
     {
-        return val.value_of();
+        return  ((val.value_of() < minv)  ? (minv) :
+                ((val.value_of() > maxv)   ? (maxv) :
+                  val.value_of())) / maxv * 0.5f + 0.5f;
     }
 
-    static volume_gain denormalize(float val)
+    static volume_gain denormalize(float val, const float minv = -24.f, const float maxv = 24.f)
     {
-        return volume_gain(lin2dB(val));
+        return volume_gain(dB2lin((val - 0.5f) * 2.0f * maxv));
     }
 };

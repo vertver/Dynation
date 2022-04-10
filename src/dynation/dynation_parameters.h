@@ -153,6 +153,7 @@ typedef std::variant<
 	float,
 	int16_t,
 
+    log_gain,
     volume_gain,
 
 	DistortionType,
