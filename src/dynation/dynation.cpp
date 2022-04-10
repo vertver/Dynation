@@ -21,6 +21,7 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 	: State(InGainState)
 {
 	StateType& ThisState = *State->State();
+	const auto DefaultHandler = [](auto Input) {};
 
 	/*
 		This stuff has become so huge that it will now have to write a huge description.
@@ -40,7 +41,8 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 		copyable because it can be in more than one location. Also, keep in mind that this 
 		delegate should preferably point to a lambda that is inside the parent class.
 	*/
-	using ParameterPair = std::tuple<DynationParamType, ParameterStruct, fu2::function<void(DynationParamType)>>;
+	using OnParameterChangeCallback = fu2::function<void(DynationParamType)>;
+	using ParameterPair = std::tuple<DynationParamType, ParameterStruct, OnParameterChangeCallback>;
 	const std::initializer_list<ParameterPair> List = {
 		{ DistortionType::NoneType,			{ "Distortion type",	static_cast<void*>(&ThisState.DistortType)						}, 
 			[this](auto Input) 
@@ -54,43 +56,76 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 				}
 			} 
 		},
-		{ static_cast<int16_t>(0),			{ "reserved",			static_cast<void*>(&ThisState.reserved)							}, [this](auto Input) {} },
+		{ static_cast<int16_t>(0),			{ "reserved",			static_cast<void*>(&ThisState.reserved)							}, DefaultHandler },
 
-		{ 1.f,								{ "Dry/Wet",			static_cast<void*>(&ThisState.DryWet)							}, [this](auto Input) {} },
-		{ volume_gain(1.f),					{ "Input volume",		static_cast<void*>(&ThisState.InputVolume)						}, [this](auto Input) {} },
-		{ volume_gain(1.f),					{ "Output volume",		static_cast<void*>(&ThisState.OutputVolume)						}, [this](auto Input) {} },
-		{ 0.5f,								{ "Tilt EQ",			static_cast<void*>(&ThisState.TiltEQ)							}, [this](auto Input) {} },
-		{ 0.0f,								{ "Drive",				static_cast<void*>(&ThisState.Drive)							}, [this](auto Input) {} },
-		{ 0.0f,								{ "Hardness",			static_cast<void*>(&ThisState.Hardness)							}, [this](auto Input) {} },
-		{ 0.0f,								{ "Downshifter",		static_cast<void*>(&ThisState.Downshifter)						}, [this](auto Input) {} },
-		{ 0.0f,								{ "Bitshifter",			static_cast<void*>(&ThisState.Bitshifter)						}, [this](auto Input) {} },
+		{ 1.f,								{ "Dry/Wet",			static_cast<void*>(&ThisState.DryWet)							}, DefaultHandler },
+		{ volume_gain(1.f),					{ "Input volume",		static_cast<void*>(&ThisState.InputVolume)						}, DefaultHandler },
+		{ volume_gain(1.f),					{ "Output volume",		static_cast<void*>(&ThisState.OutputVolume)						}, DefaultHandler },
+		{ 0.5f,								{ "Tilt EQ",			static_cast<void*>(&ThisState.TiltEQ)							}, DefaultHandler },
+		{ 0.0f,								{ "Drive",				static_cast<void*>(&ThisState.Drive)							}, DefaultHandler },
+		{ 0.0f,								{ "Hardness",			static_cast<void*>(&ThisState.Hardness)							}, DefaultHandler },
+		{ 0.0f,								{ "Downshifter",		static_cast<void*>(&ThisState.Downshifter)						}, DefaultHandler },
+		{ bitcrusher_gain(32.0f),			{ "Bitshifter",			static_cast<void*>(&ThisState.Bitshifter)						}, DefaultHandler },
 
 
-		{ CompressorStatus::Disabled,		{ "1 status",			static_cast<void*>(&ThisState.FirstCompressor.CompStatus)		}, [this](auto Input) {} },
-		{ CompressorMode::BasicCompressor,	{ "1 mode",				static_cast<void*>(&ThisState.FirstCompressor.CompStatus)		}, [this](auto Input) {} },
-		{ static_cast<int16_t>(0),			{ "1 reserved2",		static_cast<void*>(&ThisState.FirstCompressor.reserved2)		}, [this](auto Input) {} },
-		{ static_cast<int16_t>(0),			{ "1 reserved3",		static_cast<void*>(&ThisState.FirstCompressor.reserved3)		}, [this](auto Input) {} },												
-		{ 0.f,								{ "1 attack",			static_cast<void*>(&ThisState.FirstCompressor.Attack)			}, [this](auto Input) {} },
-		{ 0.f,								{ "1 release",			static_cast<void*>(&ThisState.FirstCompressor.Release)			}, [this](auto Input) {} },
-		{ log_gain(1.f),					{ "1 threshold",		static_cast<void*>(&ThisState.FirstCompressor.Threshold)		}, [this](auto Input) {} },
-		{ 0.f,								{ "1 ratio",			static_cast<void*>(&ThisState.FirstCompressor.Ratio)			}, [this](auto Input) {} },
-		{ 0.f,								{ "1 reserved3",		static_cast<void*>(&ThisState.FirstCompressor.Reserved)			}, [this](auto Input) {} },
-		{ 1.f,								{ "1 parallel mixing",	static_cast<void*>(&ThisState.FirstCompressor.ParallelMix)		}, [this](auto Input) {} },
-		{ volume_gain(1.f),					{ "1 pump gain",		static_cast<void*>(&ThisState.FirstCompressor.PumpGain)			}, [this](auto Input) {} },
-		{ 0.f,								{ "1 analog submix",	static_cast<void*>(&ThisState.FirstCompressor.AnalogSubmix)		}, [this](auto Input) {} },
+		{ CompressorStatus::Disabled,		{ "1 status",			static_cast<void*>(&ThisState.FirstCompressor.CompStatus)		}, 
+			[this](auto Input) 
+			{
+				auto NewStatus = std::get<CompressorStatus>(Input);
+				if (NewStatus != State->State()->FirstCompressor.CompStatus) {
+					State->State()->FirstCompressor.CompStatus = NewStatus;
+					ResetCompression();
+				}
+			} 
+		},
 
-		{ CompressorStatus::Disabled,		{ "2 status",			static_cast<void*>(&ThisState.SecondCompressor.CompStatus)		}, [this](auto Input) {} },
-		{ CompressorMode::BasicCompressor,	{ "2 mode",				static_cast<void*>(&ThisState.SecondCompressor.CompStatus)		}, [this](auto Input) {} },
-		{ static_cast<int16_t>(0),			{ "2 reserved",			static_cast<void*>(&ThisState.SecondCompressor.reserved2)		}, [this](auto Input) {} },
-		{ static_cast<int16_t>(0),			{ "2 reserved2",		static_cast<void*>(&ThisState.SecondCompressor.reserved3)		}, [this](auto Input) {} },												
-		{ 0.f,								{ "2 attack",			static_cast<void*>(&ThisState.SecondCompressor.Attack)			}, [this](auto Input) {} },
-		{ 0.f,								{ "2 release",			static_cast<void*>(&ThisState.SecondCompressor.Release)			}, [this](auto Input) {} },
-		{ log_gain(1.f),					{ "2 threshold",		static_cast<void*>(&ThisState.SecondCompressor.Threshold)		}, [this](auto Input) {} },
-		{ 0.f,								{ "2 ratio",			static_cast<void*>(&ThisState.SecondCompressor.Ratio)			}, [this](auto Input) {} },
-		{ 0.f,								{ "2 reserved3",		static_cast<void*>(&ThisState.SecondCompressor.Reserved)		}, [this](auto Input) {} },
-		{ 1.f,								{ "2 parallel mixing",	static_cast<void*>(&ThisState.SecondCompressor.ParallelMix)		}, [this](auto Input) {} },
-		{ volume_gain(1.f),					{ "2 pump gain",		static_cast<void*>(&ThisState.SecondCompressor.PumpGain)		}, [this](auto Input) {} },
-		{ 0.f,								{ "2 analog submix",	static_cast<void*>(&ThisState.SecondCompressor.AnalogSubmix)	}, [this](auto Input) {} },
+		{ CompressorMode::BasicCompressor,	{ "1 mode",				static_cast<void*>(&ThisState.FirstCompressor.CompStatus)		}, 
+			[this](auto Input)
+			{
+
+			}
+		},
+
+		{ static_cast<int16_t>(0),			{ "1 reserved2",		static_cast<void*>(&ThisState.FirstCompressor.reserved2)		}, DefaultHandler },
+		{ static_cast<int16_t>(0),			{ "1 reserved3",		static_cast<void*>(&ThisState.FirstCompressor.reserved3)		}, DefaultHandler },												
+		{ 0.f,								{ "1 attack",			static_cast<void*>(&ThisState.FirstCompressor.Attack)			}, DefaultHandler },
+		{ 0.f,								{ "1 release",			static_cast<void*>(&ThisState.FirstCompressor.Release)			}, DefaultHandler },
+		{ log_gain(1.f),					{ "1 threshold",		static_cast<void*>(&ThisState.FirstCompressor.Threshold)		}, DefaultHandler },
+		{ 0.f,								{ "1 ratio",			static_cast<void*>(&ThisState.FirstCompressor.Ratio)			}, DefaultHandler },
+		{ 0.f,								{ "1 reserved3",		static_cast<void*>(&ThisState.FirstCompressor.Reserved)			}, DefaultHandler },
+		{ 1.f,								{ "1 parallel mixing",	static_cast<void*>(&ThisState.FirstCompressor.ParallelMix)		}, DefaultHandler },
+		{ volume_gain(1.f),					{ "1 pump gain",		static_cast<void*>(&ThisState.FirstCompressor.PumpGain)			}, DefaultHandler },
+		{ 0.f,								{ "1 analog submix",	static_cast<void*>(&ThisState.FirstCompressor.AnalogSubmix)		}, DefaultHandler },
+
+
+		{ CompressorStatus::Disabled,		{ "2 status",			static_cast<void*>(&ThisState.SecondCompressor.CompStatus)		},
+			[this](auto Input)
+			{
+				auto NewStatus = std::get<CompressorStatus>(Input);
+				if (NewStatus != State->State()->SecondCompressor.CompStatus) {
+					State->State()->SecondCompressor.CompStatus = NewStatus;
+					ResetCompression();
+				}
+			}
+		},
+
+		{ CompressorMode::BasicCompressor,	{ "2 mode",				static_cast<void*>(&ThisState.SecondCompressor.CompStatus)		},
+			[this](auto Input)
+			{
+
+			}
+		},
+
+		{ static_cast<int16_t>(0),			{ "2 reserved",			static_cast<void*>(&ThisState.SecondCompressor.reserved2)		}, DefaultHandler },
+		{ static_cast<int16_t>(0),			{ "2 reserved2",		static_cast<void*>(&ThisState.SecondCompressor.reserved3)		}, DefaultHandler },												
+		{ 0.f,								{ "2 attack",			static_cast<void*>(&ThisState.SecondCompressor.Attack)			}, DefaultHandler },
+		{ 0.f,								{ "2 release",			static_cast<void*>(&ThisState.SecondCompressor.Release)			}, DefaultHandler },
+		{ log_gain(1.f),					{ "2 threshold",		static_cast<void*>(&ThisState.SecondCompressor.Threshold)		}, DefaultHandler },
+		{ 0.f,								{ "2 ratio",			static_cast<void*>(&ThisState.SecondCompressor.Ratio)			}, DefaultHandler },
+		{ 0.f,								{ "2 reserved3",		static_cast<void*>(&ThisState.SecondCompressor.Reserved)		}, DefaultHandler },
+		{ 1.f,								{ "2 parallel mixing",	static_cast<void*>(&ThisState.SecondCompressor.ParallelMix)		}, DefaultHandler },
+		{ volume_gain(1.f),					{ "2 pump gain",		static_cast<void*>(&ThisState.SecondCompressor.PumpGain)		}, DefaultHandler },
+		{ 0.f,								{ "2 analog submix",	static_cast<void*>(&ThisState.SecondCompressor.AnalogSubmix)	}, DefaultHandler },
 	};
 
 	Parameters = std::make_unique<DynationContainer>(List);
@@ -98,7 +133,7 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 	Info.Name = "Dynation";
 	Info.Product = "Dynation";
 	Info.Vendor = "Anton Kovalev";
-	Info.Version = 14;
+	Info.Version = 20;
 }
 
 DynationPlugin::~DynationPlugin()
@@ -194,11 +229,7 @@ float
 DynationPlugin::GetParameter(int32_t ParameterIdx)
 {
 	float OutValue = 0.f;
-
-	State->Lock();
 	Parameters->GetValueNormalized(ParameterIdx, OutValue);
-	State->Unlock();
-
 	return OutValue;
 }
 

@@ -235,6 +235,7 @@ typedef std::variant<
 
     log_gain,
     volume_gain,
+    bitcrusher_gain,
 
 	DistortionType,
 	CompressorStatus,

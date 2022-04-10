@@ -8,6 +8,7 @@
 
 using log_gain = strong::type<float, struct log_gain_>;
 using volume_gain = strong::type<float, struct volume_gain_>;
+using bitcrusher_gain = strong::type<float, struct bitcrusher_gain_>;
 
 template<typename T>
 struct TypeConverter;
@@ -66,7 +67,6 @@ template<>
 struct TypeConverter<volume_gain>
 {
     static std::string_view GetSymbol() { return "dB"; }
-
     static std::string GetValueString(volume_gain val) { return std::to_string(lin2dB(val.value_of())); }
 
     static float normalize(volume_gain val, const float minv = -24.f, const float maxv = 24.f) 
@@ -78,4 +78,14 @@ struct TypeConverter<volume_gain>
     {
         return volume_gain(dB2lin((val - 0.5f) * 2.0f * maxv));
     }
+};
+
+template<>
+struct TypeConverter<bitcrusher_gain>
+{
+    static std::string_view GetSymbol() { return "%"; }
+    static std::string GetValueString(bitcrusher_gain val) { char TempBuf[15] = {}; std::snprintf(TempBuf, 15, "%.0f", normalize(val) * 100.f); return TempBuf; }
+
+    static float normalize(bitcrusher_gain val) {  return 1 - log_to_param(val.value_of(), 1.f, 32.f); }
+    static bitcrusher_gain denormalize(float val) { return bitcrusher_gain(param_to_log(1 - val, 1.f, 32.f)); }
 };

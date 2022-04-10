@@ -17,11 +17,11 @@ template<std::int64_t N, typename ParamType>
 class ParametersContainer
 {
 private:
-    using ParamCallback = fu2::function<void(ParamType)>;
+    using OnParameterChangeCallback = fu2::function<void(ParamType)>;
 
     using InfosContainer = std::array<ParameterStruct, N>;
     using ParamsContainer = std::array<ParamType, N>;
-    using FuncsContainer = std::array<ParamCallback, N>;
+    using FuncsContainer = std::array<OnParameterChangeCallback, N>;
 
     InfosContainer ParametersInfo;
     ParamsContainer Parameters;
@@ -32,7 +32,7 @@ public:
     ParametersContainer(ParametersContainer&) = delete;
     ParametersContainer(ParametersContainer&&) = default;
 
-    ParametersContainer(std::initializer_list<std::tuple<ParamType, ParameterStruct, ParamCallback>> InitList)
+    ParametersContainer(std::initializer_list<std::tuple<ParamType, ParameterStruct, OnParameterChangeCallback>> InitList)
     {
         if (InitList.size() != N) {
             throw std::out_of_range("initializer_list size doesn't equal container's size!");
@@ -63,7 +63,7 @@ public:
         std::visit([&](auto&& arg) {
             using U = std::decay_t<decltype(arg)>;
             ReturnString = TypeConverter<U>::GetSymbol();
-            }, Parameters[Index]);
+        }, Parameters[Index]);
 
         return ReturnString;
     }
@@ -74,7 +74,7 @@ public:
         std::visit([&](auto&& arg) {
             using U = std::decay_t<decltype(arg)>;
             ReturnString = TypeConverter<U>::GetValueString(std::get<U>(Parameters[Index]));
-            }, Parameters[Index]);
+        }, Parameters[Index]);
 
         return ReturnString;
     }
@@ -121,7 +121,7 @@ public:
             if (RawPtr != nullptr) {
                 *RawPtr = std::get<U>(Parameters[Index]);
             }
-            }, OutValue);
+        }, OutValue);
 
         return true;
     }
@@ -131,7 +131,7 @@ public:
         std::visit([&](auto&& arg) {
             using U = std::decay_t<decltype(arg)>;
             OutValue = std::get<U>(Parameters[Index]);
-            }, Parameters[Index]);
+        }, Parameters[Index]);
 
         return true;
     }
@@ -151,7 +151,7 @@ public:
                     isVisited = false;
                     return;
                 }
-                }, Parameters[Index]);
+            }, Parameters[Index]);
 
             if (!isVisited) {
                 return false;
@@ -180,7 +180,7 @@ public:
             std::visit([&](auto&& arg) {
                 using U = std::decay_t<decltype(arg)>;
                 OutValue = TypeConverter<U>::normalize(std::get<U>(Parameters[Index]), args...);
-                }, Parameters[Index]);
+            }, Parameters[Index]);
         }
         catch (const std::exception& exc) {
             return false;
@@ -208,7 +208,7 @@ public:
                     U TempValue = std::get<U>(Parameters[Index]);
                     *RawPtr = TempValue;
                 }
-                }, Parameters[Index]);
+            }, Parameters[Index]);
         }
         catch (const std::exception& exc) {
             return false;

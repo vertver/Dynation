@@ -32,13 +32,33 @@ DynationPlugin::InitCompression()
 void
 DynationPlugin::ResetBitcrusher()
 {
-
+    ProcessState.Shifters = {};
+    //BitcrusherReset(State->State())
 }
 
 void
 DynationPlugin::ResetDistortion()
 {
+    ProcessState.Distort = {};
 
+    switch (State->State()->DistortType)
+    {
+        case DistortionType::NoneType:
+            break;
+        case DistortionType::TubeDistortion:
+            TubeDistortionReset(State->State()->Drive, ProcessState.Distort.Alpha, ProcessState.Distort.Beta);
+            break;
+        case DistortionType::Sincrusher:
+            break;
+        case DistortionType::HardClip:
+            break;
+        case DistortionType::FBack:
+            break;
+        case DistortionType::SoftClip:
+            break;
+    default:
+        break;
+    }
 }
 
 void
