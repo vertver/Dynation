@@ -169,9 +169,9 @@ DynationPlugin::GetParameter(int32_t ParameterIdx)
 {
 	float OutValue = 0.f;
 
-	State->ReadLock();
+	State->Lock();
 	Parameters->GetValueNormalized(ParameterIdx, OutValue);
-	State->ReadUnlock();
+	State->Unlock();
 
 	return OutValue;
 }
@@ -179,7 +179,7 @@ DynationPlugin::GetParameter(int32_t ParameterIdx)
 void 
 DynationPlugin::SetParameter(int32_t ParameterIdx, float ParameterValue)
 {
-	State->WriteLock();
+	State->Lock();
 	Parameters->SetValueNormalized(ParameterIdx, ParameterValue); 
-	State->WriteUnlock();
+	State->Unlock();
 }

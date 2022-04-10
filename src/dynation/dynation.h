@@ -5,88 +5,6 @@
 * MIT License
 ***************************************************************************/
 #include "base.h"
-
-#define PARAMETERS_COUNT 34
-
-enum class DistortionType : int16_t
-{
-	NoneType,
-	TubeDistortion,
-	Sincrusher,
-	HardClip,
-	FBack,
-	SoftClip,
-
-	// For TypeConverter
-	MaxEnum
-};
-
-enum class CompressorStatus : int16_t
-{
-	Disabled,
-	PreComp,
-	PostComp,
-
-	// For TypeConverter
-	MaxEnum
-};
-	
-enum class CompressorMode : int16_t
-{
-	BasicCompressor,
-	EnvelopeCompressor,
-	RMSCompressor,
-	AnalogCompressor,
-
-	// For TypeConverter
-	MaxEnum
-};
-
-struct CompressorState
-{
-	CompressorStatus CompStatus = CompressorStatus::Disabled;
-	CompressorMode CompressorNode = CompressorMode::BasicCompressor;
-	int16_t reserved2 = 0;
-	int16_t reserved3 = 0;
-
-	// Time block
-	float Attack = 0.f;							// Attack 
-	float Release = 0.f;						// Release
-	volume_gain Threshold = volume_gain(0.f);	// Linear threshold 
-	float Ratio = 1.f;							// 1:x ration value
-
-	// Mixing block
-	float Reserved = 0.f;
-	float ParallelMix = 1.f;					// Parallel mixing
-	volume_gain PumpGain = volume_gain(0.f);	// Amplifier value in dB
-	float AnalogSubmix = 0.f;					// Mix between two parallel compressor with unique sound
-};
-
-struct DynationState
-{
-	// States and modes block
-	DistortionType DistortType = DistortionType::NoneType;
-	int16_t reserved = 0;
-
-	// Base block
-	float DryWet = 1.f;								// Global dry/wet level
-	volume_gain InputVolume = volume_gain(0.f);		// input volume in dB
-	volume_gain OutputVolume = volume_gain(0.f);	// output volume in dB
-	float TiltEQ = 0.5f;							// Tilt EQ level
-
-	// Distortion block
-	float Drive = 0.f;				// Distortion drive! (dry/wet of distortion + power of distortion)
-	float Hardness = 0.f;			// Distortion hardness.
-
-	// Bitcrusher
-	float Downshifter = 0.f;		// Downshifter level
-	float Bitshifter = 0.f;			// Bitshifter level
-
-	// Compressor
-	CompressorState FirstCompressor;
-	CompressorState SecondCompressor;
-};
-
 #include "dynation_parameters.h"
 
 class CStateStorage
@@ -99,11 +17,11 @@ public:
 	CStateStorage(StateType* pInGainState) : CurrentState(pInGainState) {}
 	~CStateStorage() { delete CurrentState; }
 
-	void ReadLock() { DataLock.lock(); }
-	void ReadUnlock() { DataLock.unlock(); }
+	void Lock() { DataLock.lock(); }
+	void Unlock() { DataLock.unlock(); }
 
-	void WriteLock() { DataLock.lock(); }
-	void WriteUnlock() { DataLock.unlock(); }
+	void OnBeginEdit(int32_t OffsetOfEditing, int32_t SizeOfEditing) {}
+	void OnEndEdit(int32_t OffsetOfEditing, int32_t SizeOfEditing) {}
 
 	StateType* State() { return this->CurrentState; }
 };
