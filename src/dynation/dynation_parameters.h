@@ -153,6 +153,8 @@ typedef std::variant<
 	float,
 	int16_t,
 
+    volume_gain,
+
 	DistortionType,
 	CompressorStatus,
 	CompressorMode

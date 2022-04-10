@@ -60,7 +60,7 @@ public:
             ReturnString = TypeConverter<U>::GetSymbol();
             }, Parameters[Index]);
 
-        return "";
+        return ReturnString;
     }
 
     std::string GetParameterValueString(const int32_t Index)

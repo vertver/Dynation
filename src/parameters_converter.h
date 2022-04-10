@@ -6,26 +6,7 @@
 ***************************************************************************/
 #pragma once
 
-class GainLevel
-{
-private:
-    float Storage = 0.f;
-
-public:
-    GainLevel() = default;
-    GainLevel(GainLevel&) = default;
-    GainLevel(GainLevel&&) = default;
-    static GainLevel CreateGainLevel(float InLevel)
-    {
-        GainLevel level;
-        level.SetValue(InLevel);
-        return level;
-    }
-
-    float GetValueNormalized() { return Storage; }
-    float GetValue() { return lin2dB(Storage); }
-    void SetValue(float Val) { Storage = dB2lin(Val); }
-};
+using volume_gain = strong::type<float, struct volume_gain_>;
 
 template<typename T>
 struct TypeConverter;
@@ -135,25 +116,25 @@ struct TypeConverter<int16_t>
 };
 
 template<>
-struct TypeConverter<GainLevel>
+struct TypeConverter<volume_gain>
 {
     static std::string_view GetSymbol()
     {
         return "dB";
     }
 
-    static std::string GetValueString(GainLevel Value)
+    static std::string GetValueString(volume_gain val)
     {
-        return std::to_string(Value.GetValue());
+        return std::to_string(val.value_of());
     }
 
-    static float normalize(GainLevel val)
+    static float normalize(volume_gain val)
     {
-        return val.GetValueNormalized();
+        return val.value_of();
     }
 
-    static GainLevel denormalize(float val)
+    static volume_gain denormalize(float val)
     {
-        return GainLevel::CreateGainLevel(val);
+        return volume_gain(lin2dB(val));
     }
 };

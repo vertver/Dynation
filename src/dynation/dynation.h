@@ -44,16 +44,16 @@ struct CompressorState
 	int16_t reserved3 = 0;
 
 	// Time block
-	float Attack = 0.f;				// Attack 
-	float Release = 0.f;			// Release
-	float Threshold = 0.f;			// Linear threshold 
-	float Ratio = 1.f;				// 1:x ration value
+	float Attack = 0.f;							// Attack 
+	float Release = 0.f;						// Release
+	volume_gain Threshold = volume_gain(0.f);	// Linear threshold 
+	float Ratio = 1.f;							// 1:x ration value
 
 	// Mixing block
 	float Reserved = 0.f;
-	float ParallelMix = 1.f;		// Parallel mixing
-	float PumpGain = 1.f;			// Linear amplifier value
-	float AnalogSubmix = 0.f;		// Mix between two parallel compressor with unique sound
+	float ParallelMix = 1.f;					// Parallel mixing
+	volume_gain PumpGain = volume_gain(0.f);	// Amplifier value in dB
+	float AnalogSubmix = 0.f;					// Mix between two parallel compressor with unique sound
 };
 
 struct DynationState
@@ -63,10 +63,10 @@ struct DynationState
 	int16_t reserved = 0;
 
 	// Base block
-	float DryWet = 1.f;				// Global dry/wet level
-	float InputVolume = 1.f;		// Linear input volume
-	float OutputVolume = 1.f;		// Linear output volume
-	float TiltEQ = 0.5f;			// Tilt EQ level
+	float DryWet = 1.f;								// Global dry/wet level
+	volume_gain InputVolume = volume_gain(0.f);		// input volume in dB
+	volume_gain OutputVolume = volume_gain(0.f);	// output volume in dB
+	float TiltEQ = 0.5f;							// Tilt EQ level
 
 	// Distortion block
 	float Drive = 0.f;				// Distortion drive! (dry/wet of distortion + power of distortion)

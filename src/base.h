@@ -13,6 +13,7 @@
 #include <variant>
 #include <array>
 
+#include "strong_type.h"
 #include "dsp_math.h"
 
 #include "plugin.h"
