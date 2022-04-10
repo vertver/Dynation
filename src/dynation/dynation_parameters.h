@@ -50,16 +50,16 @@ struct CompressorState
     int16_t reserved3 = 0;
 
     // Time block
-    float Attack = 0.f;							// Attack 
-    float Release = 0.f;						// Release
-    volume_gain Threshold = volume_gain(0.f);	// Linear threshold 
-    float Ratio = 1.f;							// 1:x ration value
+    float Attack = 0.f;							    // Attack 
+    float Release = 0.f;						    // Release
+    volume_gain Threshold = volume_gain(0.f);	    // Linear threshold 
+    float Ratio = 1.f;							    // 1:x ration value
 
     // Mixing block
     float Reserved = 0.f;
-    float ParallelMix = 1.f;					// Parallel mixing
-    volume_gain PumpGain = volume_gain(0.f);	// Amplifier value in dB
-    float AnalogSubmix = 0.f;					// Mix between two parallel compressor with unique sound
+    float ParallelMix = 1.f;					    // Parallel mixing
+    volume_gain PumpGain = volume_gain(0.f);	    // Amplifier value in dB
+    float AnalogSubmix = 0.f;					    // Mix between two parallel compressor with unique sound
 };
 
 struct DynationState
@@ -92,10 +92,7 @@ constexpr size_t SizeOfState = sizeof(DynationState);
 template<>
 struct TypeConverter<DistortionType>
 {
-    static std::string_view GetSymbol()
-    {
-        return "";
-    }
+    static std::string_view GetSymbol() { return ""; }
 
     static std::string GetValueString(DistortionType Value)
     {
@@ -146,10 +143,7 @@ struct TypeConverter<DistortionType>
 template<>
 struct TypeConverter<CompressorStatus>
 {
-    static std::string_view GetSymbol()
-    {
-        return "";
-    }
+    static std::string_view GetSymbol() { return ""; }
 
     static std::string GetValueString(CompressorStatus Value)
     {
@@ -191,10 +185,7 @@ struct TypeConverter<CompressorStatus>
 template<>
 struct TypeConverter<CompressorMode>
 {
-    static std::string_view GetSymbol()
-    {
-        return "";
-    }
+    static std::string_view GetSymbol() { return ""; }
 
     static std::string GetValueString(CompressorMode Value)
     {
@@ -248,15 +239,8 @@ typedef std::variant<
 	DistortionType,
 	CompressorStatus,
 	CompressorMode
-	//GainLevel
-	//QRatio,
-	//CompressorRatio,
-	//LinearHertz,
-	//Log10Hertz,
-	//LogTime,
-	//FilterSlopeValue
 > DynationParamType;
-using DynationContainer = ParametersContainer<PARAMETERS_COUNT, DynationParamType>;
 
+using DynationContainer = ParametersContainer<PARAMETERS_COUNT, DynationParamType>;
 using StateType = DynationState;
 

@@ -7,6 +7,56 @@
 #include "base.h"
 #include "dynation_parameters.h"
 
+struct DistortionState
+{
+	float Alpha = 0.f;
+	float Beta = 0.f;
+};
+
+struct ShiftersState
+{
+	float BitcrusherPowerValue = 0.f;
+
+	float DownshifterStorageFloat = 0.f;
+	int32_t DownshifterStorageInt = 0;
+
+	float ADCFailureStorage = 0.f;
+};
+
+struct CompressorProcessState
+{
+	float Gate_ = 1.0f;
+	float Threshold_ = 1.0f;
+	float Ratio_orig = 1.0f;
+	float Attack_sec = 0.0f;
+	float Release_sec = 0.0f;
+	float SampleRate = 0.0f;
+	bool CompressModeB = true; 
+
+	float Envelope = FLT_EPSILON;
+	float Envelope2 = FLT_EPSILON;
+	float Threshold_db = 0.0f;
+	float Ratio_ = 1.0f;
+	float Attack_ = 0.0f;
+	float Release_ = 0.0f;
+
+	PlanarBuffer<double> RMSBuffer1;
+	PlanarBuffer<double> RMSBuffer2;
+	PlanarBuffer<double> RMSBufferRMS;
+	int32_t RMSBufferChannels = 0;
+	int32_t RMSBufferSize1 = 0;
+	int32_t RMSBufferSize2 = 0;
+	int32_t RMSBufferOffset1 = 0;
+	int32_t RMSBufferOffset2 = 0;
+};
+
+struct DynationProcessState
+{
+	DistortionState Distort;
+	DistortionState Shifters;
+	CompressorProcessState Compressor;
+};
+
 class CStateStorage
 {
 private:
@@ -61,6 +111,7 @@ private:
 	PluginInfo Info = {};
 
 private:
+	DynationProcessState ProcessState;
 	DynationState TempState = {};
 
 private:
@@ -70,6 +121,21 @@ private:
 	int32_t OutputChannels = 0;
 
 	std::unique_ptr<DynationContainer> Parameters;
+
+private:
+	void InitBitcrusher();
+	void InitDistortion();
+	void InitCompression();
+
+private:
+	void ResetBitcrusher();
+	void ResetDistortion();
+	void ResetCompression();
+
+private:
+	void ProcessBitcrusher(AudioProcessingBlock<float>& ProcessingBlock);
+	void ProcessDistortion(AudioProcessingBlock<float>& ProcessingBlock);
+	void ProcessCompression(AudioProcessingBlock<float>& ProcessingBlock);
 
 private:
 	void Reset();

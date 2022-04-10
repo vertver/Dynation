@@ -13,8 +13,14 @@
 #include <variant>
 #include <array>
 
+#define MAX_CHANNELS 8
+
 #include "strong_type.h"
+#include "function2.hpp"
+
 #include "dsp_math.h"
+
+#include "buffer_helpers.h"
 
 #include "plugin.h"
 #include "parameters_converter.h"

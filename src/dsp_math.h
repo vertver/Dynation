@@ -19,6 +19,18 @@ inline double dB2lin(double dB)
 	return std::exp(dB * 0.11512925464970228420089957273422);		// ln( 10 ) / 20
 }
 
+inline
+double
+fasttanh2(double x) {
+	double ax = fabs(x);
+	double x2 = x * x;
+
+	return(x * (2.45550750702956 + 2.45550750702956 * ax +
+		(0.893229853513558 + 0.821226666969744 * ax) * x2) /
+		(2.44506634652299 + (2.44506634652299 + x2) *
+			fabs(x + 0.814642734961073 * x * ax)));
+}
+
 inline double fastatan(double x)
 {
 	return (x / (1.0 + 0.28 * (x * x)));
@@ -57,4 +69,24 @@ inline double rlog10(double x)
 inline float signf(float x)
 {
 	return (std::signbit(x) ? -1.f : 1.f);
+}
+
+inline float param_to_log(float x, float mn, float mx)
+{
+	return (exp(log(mn) + (x) * (log(mx) - log(mn))));
+}
+
+inline float log_to_param(float x, float mn, float mx)
+{
+	return  ((log(x) - log(mn)) / (log(mx) - log(mn)));
+}
+
+inline float param_to_lin(float x, float mn, float mx)
+{
+	return ((mn) + (x) * ((mx) - (mn)));
+}
+
+inline float lin_to_param(float x, float mn, float mx)
+{
+	return (((x) - (mn)) / ((mx) - (mn)));
 }

@@ -6,6 +6,7 @@
 ***************************************************************************/
 #pragma once
 
+
 struct ParameterStruct
 {
     std::string_view ParameterName;
@@ -16,30 +17,34 @@ template<std::int64_t N, typename ParamType>
 class ParametersContainer
 {
 private:
+    using ParamCallback = fu2::function<void(ParamType)>;
+
     using InfosContainer = std::array<ParameterStruct, N>;
     using ParamsContainer = std::array<ParamType, N>;
+    using FuncsContainer = std::array<ParamCallback, N>;
 
     InfosContainer ParametersInfo;
     ParamsContainer Parameters;
+    FuncsContainer Functions;
 
 public:
     // Allow only "MoveConstructible" semantic for this class
     ParametersContainer(ParametersContainer&) = delete;
     ParametersContainer(ParametersContainer&&) = default;
 
-    ParametersContainer(std::initializer_list<std::pair<ParamType, ParameterStruct>> InitList) 
+    ParametersContainer(std::initializer_list<std::tuple<ParamType, ParameterStruct, ParamCallback>> InitList)
     {
         if (InitList.size() != N) {
             throw std::out_of_range("initializer_list size doesn't equal container's size!");
         }    
 
         int32_t Counter = 0;
-        for (auto const& [Type, Info] : InitList) {
+        for (auto const& [Type, Info, Callback] : InitList) {
             SetRawValue(Counter, Type);
-            ParametersInfo[Counter] = Info;
+            ParametersInfo[Counter] = std::move(Info);
+            Functions[Counter] = Callback;
             Counter++;
         }
-
     }
 
     constexpr std::int64_t GetParamsCount()
@@ -196,10 +201,12 @@ public:
             std::visit([&](auto&& arg) {
                 using U = std::decay_t<decltype(arg)>;
                 Parameters[Index] = TypeConverter<U>::denormalize(OutValue, args...);
+                Functions[Index](Parameters[Index]);
 
                 U* RawPtr = reinterpret_cast<U*>(ParametersInfo[Index].ParameterRawPointer);
                 if (RawPtr != nullptr) {
-                    *RawPtr = std::get<U>(Parameters[Index]);
+                    U TempValue = std::get<U>(Parameters[Index]);
+                    *RawPtr = TempValue;
                 }
                 }, Parameters[Index]);
         }
