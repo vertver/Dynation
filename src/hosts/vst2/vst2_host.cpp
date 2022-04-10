@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
+* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
+* Dynation plugin
+* MIT License
+***************************************************************************/
 #include "pch.h"
 
 void
@@ -59,7 +65,7 @@ VST2Host::VST2Host(
 	}
 
 	if (View != nullptr) {
-		if (View->Initialize()) {
+		if (View->Initialize(TempNotifier)) {
 			throw new std::exception("View can't be initialized. Something wrong inside.");
 		}
 

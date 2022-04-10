@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
+* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
+* Dynation plugin
+* MIT License
+***************************************************************************/
 #include "dynation.h"
 
 bool 
@@ -53,7 +59,7 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 		{ static_cast<int16_t>(0),			{ "2 reserved2",		static_cast<void*>(&ThisState.SecondCompressor.reserved3) } },																					
 		{ 0.f,								{ "2 attack",			static_cast<void*>(&ThisState.SecondCompressor.Attack) } },
 		{ 0.f,								{ "2 release",			static_cast<void*>(&ThisState.SecondCompressor.Release) } },
-		{ log_gain(1.f),					{ "2 threshold",			static_cast<void*>(&ThisState.SecondCompressor.Threshold) } },
+		{ log_gain(1.f),					{ "2 threshold",		static_cast<void*>(&ThisState.SecondCompressor.Threshold) } },
 		{ 0.f,								{ "2 ratio",			static_cast<void*>(&ThisState.SecondCompressor.Ratio) } },	
 		{ 0.f,								{ "2 reserved3",		static_cast<void*>(&ThisState.SecondCompressor.Reserved) } },
 		{ 1.f,								{ "2 parallel mixing",	static_cast<void*>(&ThisState.SecondCompressor.ParallelMix) } },
@@ -162,12 +168,18 @@ float
 DynationPlugin::GetParameter(int32_t ParameterIdx)
 {
 	float OutValue = 0.f;
+
+	State->ReadLock();
 	Parameters->GetValueNormalized(ParameterIdx, OutValue);
+	State->ReadUnlock();
+
 	return OutValue;
 }
 
 void 
 DynationPlugin::SetParameter(int32_t ParameterIdx, float ParameterValue)
 {
-	Parameters->SetValueNormalized(ParameterIdx, ParameterValue);
+	State->WriteLock();
+	Parameters->SetValueNormalized(ParameterIdx, ParameterValue); 
+	State->WriteUnlock();
 }

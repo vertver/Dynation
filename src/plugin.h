@@ -36,7 +36,7 @@ public:
 class BaseView
 {
 public:
-	virtual bool Initialize() = 0;
+	virtual bool Initialize(PluginNotifier* InNotifier) = 0;
 	virtual void Destroy() = 0;
 
 public:

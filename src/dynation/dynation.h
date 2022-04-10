@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
+* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
+* Dynation plugin
+* MIT License
+***************************************************************************/
 #include "base.h"
 
 #define PARAMETERS_COUNT 34
@@ -93,8 +99,12 @@ public:
 	CStateStorage(StateType* pInGainState) : CurrentState(pInGainState) {}
 	~CStateStorage() { delete CurrentState; }
 
-	void Lock() { DataLock.lock(); }
-	void Unlock() { DataLock.unlock(); }
+	void ReadLock() { DataLock.lock(); }
+	void ReadUnlock() { DataLock.unlock(); }
+
+	void WriteLock() { DataLock.lock(); }
+	void WriteUnlock() { DataLock.unlock(); }
+
 	StateType* State() { return this->CurrentState; }
 };
 
@@ -108,7 +118,7 @@ public:
 	~DynationView() {}
 
 public:
-	virtual bool Initialize() override;
+	virtual bool Initialize(PluginNotifier* InNotifier) override;
 	virtual void Destroy() override;
 
 public:
@@ -122,6 +132,7 @@ public:
 
 public:
 	virtual bool InformResize(SRect& rect) override;
+
 };
 
 class DynationPlugin : BasePlugin
