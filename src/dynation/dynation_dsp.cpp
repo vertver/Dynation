@@ -11,13 +11,13 @@
 void
 DynationPlugin::InitBitcrusher()
 {
-
+    ResetCompression();
 }
 
 void 
 DynationPlugin::InitDistortion()
 {
-
+    ResetDistortion();
 }
 
 void 
@@ -33,7 +33,7 @@ void
 DynationPlugin::ResetBitcrusher()
 {
     ProcessState.Shifters = {};
-    //BitcrusherReset(State->State())
+    BitcrusherReset(State->State()->Bitshifter, ProcessState.Shifters.BitcrusherPowerValue);
 }
 
 void
@@ -120,10 +120,10 @@ DynationPlugin::ProcessCompression(AudioProcessingBlock<float>& ProcessingBlock)
         return dB2lin(Gain);
     };
 
-	auto RMSBufferSample = [&Compressor](auto* Input)
+	auto BufferSample = [&Compressor](auto* Input)
 	{
         for (int32_t ch = 0; ch < Compressor.RMSBufferChannels; ch++) {
-            auto In_pow2 = In[ch];
+            auto In_pow2 = Input[ch];
             In_pow2 = In_pow2 * In_pow2;
 
             {

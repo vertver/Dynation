@@ -6,7 +6,6 @@
 ***************************************************************************/
 #pragma once
 
-
 struct ParameterStruct
 {
     std::string_view ParameterName;
@@ -218,11 +217,3 @@ public:
     }
 };
 
-/*
-// Please, don't ask me how this works...
-template<std::int64_t N>
-ParametersContainer<N>
-make_param_container(std::initializer_list<typename ParametersContainer<N>::ParameterStruct> initializer_list) {
-    return std::move(initializer_list);
-}
-*/

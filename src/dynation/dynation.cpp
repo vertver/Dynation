@@ -67,10 +67,11 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 		{ 0.0f,								{ "Downshifter",		static_cast<void*>(&ThisState.Downshifter)						}, DefaultHandler },
 		{ bitcrusher_gain(32.0f),			{ "Bitshifter",			static_cast<void*>(&ThisState.Bitshifter)						}, DefaultHandler },
 
-
 		{ CompressorStatus::Disabled,		{ "1 status",			static_cast<void*>(&ThisState.FirstCompressor.CompStatus)		}, 
 			[this](auto Input) 
-			{
+			{				
+				// If we've received that current compressor status is not valid - reset
+				// all stuff and prepare for new data.
 				auto NewStatus = std::get<CompressorStatus>(Input);
 				if (NewStatus != State->State()->FirstCompressor.CompStatus) {
 					State->State()->FirstCompressor.CompStatus = NewStatus;
@@ -79,10 +80,16 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 			} 
 		},
 
-		{ CompressorMode::BasicCompressor,	{ "1 mode",				static_cast<void*>(&ThisState.FirstCompressor.CompStatus)		}, 
+		{ CompressorMode::BasicCompressor,	{ "1 mode",				static_cast<void*>(&ThisState.FirstCompressor.CompressorMode)		},
 			[this](auto Input)
 			{
-
+				// If we've received that current compressor mode is not valid - reset
+				// all stuff and prepare for new data.
+				auto NewMode = std::get<CompressorMode>(Input);
+				if (NewMode != State->State()->FirstCompressor.CompressorMode) {
+					State->State()->FirstCompressor.CompressorMode = NewMode;
+					ResetCompression();
+				}
 			}
 		},
 
@@ -97,10 +104,11 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 		{ volume_gain(1.f),					{ "1 pump gain",		static_cast<void*>(&ThisState.FirstCompressor.PumpGain)			}, DefaultHandler },
 		{ 0.f,								{ "1 analog submix",	static_cast<void*>(&ThisState.FirstCompressor.AnalogSubmix)		}, DefaultHandler },
 
-
 		{ CompressorStatus::Disabled,		{ "2 status",			static_cast<void*>(&ThisState.SecondCompressor.CompStatus)		},
 			[this](auto Input)
 			{
+				// If we've received that current compressor status is not valid - reset
+				// all stuff and prepare for new data.
 				auto NewStatus = std::get<CompressorStatus>(Input);
 				if (NewStatus != State->State()->SecondCompressor.CompStatus) {
 					State->State()->SecondCompressor.CompStatus = NewStatus;
@@ -109,10 +117,16 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 			}
 		},
 
-		{ CompressorMode::BasicCompressor,	{ "2 mode",				static_cast<void*>(&ThisState.SecondCompressor.CompStatus)		},
+		{ CompressorMode::BasicCompressor,	{ "2 mode",				static_cast<void*>(&ThisState.SecondCompressor.CompressorMode)		},
 			[this](auto Input)
 			{
-
+				// If we've received that current compressor mode is not valid - reset
+				// all stuff and prepare for new data.
+				auto NewMode = std::get<CompressorMode>(Input);
+				if (NewMode != State->State()->SecondCompressor.CompressorMode) {
+					State->State()->SecondCompressor.CompressorMode = NewMode;
+					ResetCompression();
+				}
 			}
 		},
 
@@ -130,8 +144,8 @@ DynationPlugin::DynationPlugin(CStateStorage* InGainState)
 
 	Parameters = std::make_unique<DynationContainer>(List);
 
-	Info.Name = "Dynation";
-	Info.Product = "Dynation";
+	Info.Name = "Dynation MAX";
+	Info.Product = "Dynation MAX";
 	Info.Vendor = "Anton Kovalev";
 	Info.Version = 20;
 }
@@ -150,7 +164,9 @@ DynationPlugin::GetPluginInfo(PluginInfo*& Info)
 void 
 DynationPlugin::Reset()
 {
-
+	ResetBitcrusher();
+	ResetDistortion();
+	ResetCompression();
 }
 
 bool

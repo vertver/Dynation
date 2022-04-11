@@ -45,7 +45,7 @@ enum class CompressorMode : int16_t
 struct CompressorState
 {
     CompressorStatus CompStatus = CompressorStatus::Disabled;
-    CompressorMode CompressorNode = CompressorMode::BasicCompressor;
+    CompressorMode CompressorMode = CompressorMode::BasicCompressor;
     int16_t reserved2 = 0;
     int16_t reserved3 = 0;
 

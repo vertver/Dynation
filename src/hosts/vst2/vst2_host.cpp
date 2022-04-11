@@ -170,7 +170,7 @@ VST2Host::getEffectName(char* name)
 {
 	PluginInfo* Info = nullptr;
 	Plugin->GetPluginInfo(Info);
-	Info->Name.copy(name, Info->Name.size() + 1);
+	Info->Name.copy(name, Info->Name.size());
 	return true;
 }
 
@@ -179,7 +179,7 @@ VST2Host::getVendorString(char* text)
 {
 	PluginInfo* Info = nullptr;
 	Plugin->GetPluginInfo(Info);
-	Info->Vendor.copy(text, Info->Vendor.size() + 1);
+	Info->Vendor.copy(text, Info->Vendor.size());
 	return true;
 }
 
@@ -188,7 +188,7 @@ VST2Host::getProductString(char* text)
 {
 	PluginInfo* Info = nullptr;
 	Plugin->GetPluginInfo(Info);
-	Info->Product.copy(text, Info->Product.size() + 1);
+	Info->Product.copy(text, Info->Product.size());
 	return true;
 }
 

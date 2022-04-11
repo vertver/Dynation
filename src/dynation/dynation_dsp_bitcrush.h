@@ -13,7 +13,7 @@
 ****************************************************************/
 auto BitcrusherReset = [](auto DepthBits, auto& ValuePow) 
 {
-	ValuePow = static_cast<auto>(pow(2.0, static_cast<double>(DepthBits))) - 1;
+	ValuePow = (pow(2.0, DepthBits)) - 1;
 };
 
 auto Bitcrusher = [](auto Input, auto& ValuePow)

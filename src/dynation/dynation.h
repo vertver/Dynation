@@ -53,7 +53,7 @@ struct CompressorProcessState
 struct DynationProcessState
 {
 	DistortionState Distort;
-	DistortionState Shifters;
+	ShiftersState Shifters;
 	CompressorProcessState Compressor;
 };
 
