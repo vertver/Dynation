@@ -1,12 +1,11 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
 #pragma once
 
-#define PARAMETERS_COUNT 34
+#define PARAMETERS_COUNT 40
 
 enum class DistortionType : int16_t
 {
@@ -44,43 +43,50 @@ enum class CompressorMode : int16_t
 
 struct CompressorState
 {
-    CompressorStatus CompStatus = CompressorStatus::Disabled;
-    CompressorMode CompressorMode = CompressorMode::BasicCompressor;
-    int16_t reserved2 = 0;
-    int16_t reserved3 = 0;
+    CompressorStatus CompStatus;
+    CompressorMode CompressorMode;
+    int16_t reserved2;
+    int16_t reserved3;
 
     // Time block
-    float Attack = 0.f;							    // Attack 
-    float Release = 0.f;						    // Release
-    volume_gain Threshold = volume_gain(0.f);	    // Linear threshold 
-    float Ratio = 1.f;							    // 1:x ration value
+    float Attack;				// Attack 
+    float Release;				// Release
+    float Threshold;	        // Linear threshold 
+    float Ratio;				// 1:x ration value
 
     // Mixing block
-    float Reserved = 0.f;
-    float ParallelMix = 1.f;					    // Parallel mixing
-    volume_gain PumpGain = volume_gain(0.f);	    // Amplifier value in dB
-    float AnalogSubmix = 0.f;					    // Mix between two parallel compressor with unique sound
+    float Reserved;
+    float ParallelMix;			// Parallel mixing
+    float PumpGain;	            // Amplifier value in dB
+    float AnalogSubmix;			// Mix between two parallel compressor with unique sound
 };
 
 struct DynationState
 {
     // States and modes block
-    DistortionType DistortType = DistortionType::NoneType;
-    int16_t reserved = 0;
+    DistortionType DistortType;
+    int16_t reserved;
 
     // Base block
-    float DryWet = 1.f;								// Global dry/wet level
-    volume_gain InputVolume = volume_gain(0.f);		// input volume in dB
-    volume_gain OutputVolume = volume_gain(0.f);	// output volume in dB
-    float TiltEQ = 0.5f;							// Tilt EQ level
+    float DryWet;	        // Global dry/wet level
+    float InputVolume;		// input volume in dB
+    float OutputVolume;	    // output volume in dB
+    float TiltEQ;	        // Tilt EQ level
 
     // Distortion block
-    float Drive = 0.f;				// Distortion drive! (dry/wet of distortion + power of distortion)
-    float Hardness = 0.f;			// Distortion hardness.
+    float Drive;           // Distortion drive! (dry/wet of distortion + power of distortion)
+    float Hardness;        // Distortion hardness.d
 
     // Bitcrusher
-    float Downshifter = 0.f;		// Downshifter level
-    float Bitshifter = 0.f;			// Bitshifter level
+    float Downshifter;		// Downshifter level
+    float Bitshifter;	    // Bitshifter level
+    float ADCFailure;       // Bitshifter level
+    float ReservedBitcrusher;  
+
+    float ReservedFloat1;
+    float ReservedFloat2;
+    float ReservedFloat3;
+    float ReservedFloat4;
 
     // Compressor
     CompressorState FirstCompressor;
@@ -93,7 +99,6 @@ template<>
 struct TypeConverter<DistortionType>
 {
     static std::string_view GetSymbol() { return ""; }
-
     static std::string GetValueString(DistortionType Value)
     {
         switch (Value) {
@@ -144,7 +149,6 @@ template<>
 struct TypeConverter<CompressorStatus>
 {
     static std::string_view GetSymbol() { return ""; }
-
     static std::string GetValueString(CompressorStatus Value)
     {
         switch (Value) {
@@ -186,7 +190,6 @@ template<>
 struct TypeConverter<CompressorMode>
 {
     static std::string_view GetSymbol() { return ""; }
-
     static std::string GetValueString(CompressorMode Value)
     {
         switch (Value) {
@@ -235,7 +238,10 @@ typedef std::variant<
 
     log_gain,
     volume_gain,
-    bitcrusher_gain,
+    log_percentage,
+    lin_percentage,
+    bitcrusher_percentage,
+    tilteq_percentage,
 
 	DistortionType,
 	CompressorStatus,

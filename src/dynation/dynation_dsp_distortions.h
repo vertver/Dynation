@@ -4,7 +4,6 @@
 * Dynation plugin
 * MIT License
 ***************************************************************************/
-#pragma once
 
 /***************************************************************
 * 
@@ -14,7 +13,7 @@
 auto SoftClipFirst = [](auto Input, auto Drive) 
 {
 	auto Value = Input * Drive;
-	Value = static_cast<auto>(fasttanh2(static_cast<double>(Value)));
+	Value = fasttanh2(static_cast<double>(Value));
 	Value *= (1.0 / Drive);
 	return Value;
 };
@@ -46,22 +45,21 @@ auto HardClip = [](auto Input, auto Threshold) -> auto
 {
 	if (Input > Threshold) return Threshold;
 	if (Input < -Threshold) return -Threshold;
-	return Input;
+	return (double)Input;
 };
 
 auto HardClipCurve = [](auto Input, auto Drive, auto Curve) -> auto
 {
-	auto Value = In * Drive;
-	auto One = static_cast<auto>(1.0);
-	auto Zero = static_cast<auto>(0.0);
-	auto Pi = static_cast<auto>(3.14159265358979323846);
+	auto Value = Input * Drive;
+	auto One = 1.0;
+	auto Zero = 0.0;
 
 	if (Value > One) {
-		Value = One - sin((Value - One) * Curve * Pi * static_cast<auto>(0.1));
+		Value = One - sin((Value - One) * Curve * Pi * 0.1);
 		if (Value < Zero) Value = Zero;
 	}
 	if (Value < -One) {
-		Value = -One - sin((Value - -One) * Curve * Pi * static_cast<auto>(0.1));
+		Value = -One - sin((Value - -One) * Curve * Pi * 0.1);
 		if (Value > Zero) Value = Zero;
 	}
 
@@ -72,10 +70,10 @@ auto HardClipCurve = [](auto Input, auto Drive, auto Curve) -> auto
 
 auto HardDistortion = [](auto Input, auto Drive) -> auto
 {
-	auto Value = In * Drive;
-	if (Value > static_cast<auto>(1.0))  Value = static_cast<auto>(1.0);
-	if (Value < static_cast<auto>(-1.0)) Value = static_cast<auto>(-1.0);
-	Value *= (static_cast<auto>(1.0) / Drive);
+	auto Value = Input * Drive;
+	if (Value > 1.0)  Value = 1.0;
+	if (Value < -1.0) Value = -1.0;
+	Value *= (1.0 / Drive);
 	return Value;
 };
 
@@ -87,11 +85,11 @@ auto HardDistortion = [](auto Input, auto Drive) -> auto
 auto FoldbackDistortion = [](auto Input, auto Drive) -> auto
 {
 	auto Value = Input * Drive;
-	const auto Threshold = static_cast<auto>(1.0);
+	const auto Threshold = 1.0;
 	if (Value > Threshold || Value < -Threshold) {
-		Value = static_cast<auto>(fabs(
-			fabs(fmod(static_cast<double>(Value - Threshold, Threshold * static_cast<auto>(4.0))))
-			- Threshold * static_cast<auto>(2.0)
+		Value = (fabs(
+			fabs(fmod(Value - Threshold, Threshold * 4.0))
+			- Threshold * 2.0
 		)) - Threshold;
 	}
 	Value *= (1.0 / Drive);
@@ -105,7 +103,7 @@ auto FoldbackDistortion = [](auto Input, auto Drive) -> auto
 ****************************************************************/
 auto TubeDistortionReset = [](auto Drive, auto& Alpha, auto& Beta)
 {
-	Alpha = sin(((Drive * 30.0) / 101.0) * (3.14159265358979323846 / 2.0));
+	Alpha = sin(((Drive * 30.0) / 101.0) * (Pi / 2.0));
 	Beta = 2.0 * Alpha / (1.0 - Alpha);
 };
 
@@ -116,10 +114,10 @@ auto TubeFailure = [](auto Input, auto& Alpha, auto& Beta)
 
 auto TubeTriode = [](auto Input) -> auto
 {
-	auto x = (auto)In;
+	auto x = Input;
 
 	// First tube
-	x = sign(x) * ((2.0 - fabs(x)) * fabs(x));
+	x = signf(x) * ((2.0 - fabs(x)) * fabs(x));
 
 	// Second Tube
 	if (x < -1.0) {
@@ -145,7 +143,7 @@ auto TubeTriode = [](auto Input) -> auto
 auto Sincrusher = [](auto Input, auto Drive)
 {
 	// The simplest one, but not so ordinary. I like it!
-	auto Value = In;
+	auto Value = Input;
 	Value *= Drive;
 	Value = sin(Value);
 	Value /= Drive;

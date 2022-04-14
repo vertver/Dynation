@@ -1,6 +1,5 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
@@ -8,7 +7,11 @@
 
 using log_gain = strong::type<float, struct log_gain_>;
 using volume_gain = strong::type<float, struct volume_gain_>;
-using bitcrusher_gain = strong::type<float, struct bitcrusher_gain_>;
+
+using lin_percentage = strong::type<float, struct lin_percentage_>;
+using log_percentage = strong::type<float, struct log_percentage_>;
+using bitcrusher_percentage = strong::type<float, struct bitcrusher_percentage_>;
+using tilteq_percentage = strong::type<float, struct tilteq_percentage_>;
 
 template<typename T>
 struct TypeConverter;
@@ -81,11 +84,41 @@ struct TypeConverter<volume_gain>
 };
 
 template<>
-struct TypeConverter<bitcrusher_gain>
+struct TypeConverter<tilteq_percentage>
 {
     static std::string_view GetSymbol() { return "%"; }
-    static std::string GetValueString(bitcrusher_gain val) { char TempBuf[15] = {}; std::snprintf(TempBuf, 15, "%.0f", normalize(val) * 100.f); return TempBuf; }
+    static std::string GetValueString(tilteq_percentage val) { return std::to_string(static_cast<int>(normalize(val) * 100.f)); }
 
-    static float normalize(bitcrusher_gain val) {  return 1 - log_to_param(val.value_of(), 1.f, 32.f); }
-    static bitcrusher_gain denormalize(float val) { return bitcrusher_gain(param_to_log(1 - val, 1.f, 32.f)); }
+    static float normalize(tilteq_percentage val) { return ((val.value_of() + 1.0f) * 0.5f); }
+    static tilteq_percentage denormalize(float val) { return tilteq_percentage(val * 2.0f - 1.0f); }
+};
+
+template<>
+struct TypeConverter<log_percentage>
+{
+    static std::string_view GetSymbol() { return "%"; }
+    static std::string GetValueString(log_percentage val) { return std::to_string(static_cast<int>(normalize(val) * 100.f)); }
+
+    static float normalize(log_percentage val) {  return log_to_param(val.value_of(), FLT_EPSILON, 1.f); }
+    static log_percentage denormalize(float val) { return log_percentage(param_to_log(val, FLT_EPSILON, 1.f)); }
+};
+
+template<>
+struct TypeConverter<lin_percentage>
+{
+    static std::string_view GetSymbol() { return "%"; }
+    static std::string GetValueString(lin_percentage val) { return std::to_string(static_cast<int>(normalize(val) * 100.f)); }
+
+    static float normalize(lin_percentage val) { return lin_to_param(val.value_of(), 0.f, 1.f); }
+    static lin_percentage denormalize(float val) { return lin_percentage(param_to_lin(val, 0.f, 1.f)); }
+};
+
+template<>
+struct TypeConverter<bitcrusher_percentage>
+{
+    static std::string_view GetSymbol() { return "%"; }
+    static std::string GetValueString(bitcrusher_percentage val) { return std::to_string(static_cast<int>(normalize(val) * 100.f)); }
+
+    static float normalize(bitcrusher_percentage val) { return 1 - log_to_param(val.value_of(), 1.f, 32.f); }
+    static bitcrusher_percentage denormalize(float val) { return bitcrusher_percentage(param_to_log(1 - val, 1.f, 32.f)); }
 };

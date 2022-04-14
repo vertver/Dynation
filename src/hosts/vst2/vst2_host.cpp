@@ -1,6 +1,5 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
@@ -30,9 +29,9 @@ VST2Host::VST2Host(
 	BasePlugin* NewPlugin,
 	BaseView* NewView
 ) : 
+	AudioEffectX(audioMaster, 1, 1),
 	Plugin(NewPlugin),
-	View(NewView),
-	AudioEffectX(audioMaster, 1, 1)
+	View(NewView)
 {
 	if (audioMaster == nullptr) {
 		throw new std::exception("audioMaster is nullptr");
@@ -105,41 +104,24 @@ VST2Host::resume()
 
 void 
 VST2Host::processInternal(void** inputs, void** outputs, VstInt32 sampleFrames, bool isDouble)
-{
-	int32_t CurrentSample = 0;
-	int32_t SampleRendering = 0;
-	int32_t SampleFramesLeft = sampleFrames;
-
-	while (SampleFramesLeft > 0) {
-		SampleRendering = SampleFramesLeft;
-		bool isOfflineProcessing = false;
-		VstProcessLevels ProcessLevel = static_cast<VstProcessLevels>(getCurrentProcessLevel());
-		if (ProcessLevel == kVstProcessLevelOffline) {
-			isOfflineProcessing = true;
-		}
-
-		if (SampleRendering > 0) {;
-			if (isDouble) {
-				AudioProcessingBlock<double> ProcessBlock;
-				ProcessBlock.FramesPosition = 0;
-				ProcessBlock.FramesToProcess = SampleRendering;
-				ProcessBlock.Inputs = reinterpret_cast<double**>(inputs);
-				ProcessBlock.Outputs = reinterpret_cast<double**>(outputs);
-				ProcessBlock.Sidechain = nullptr;
-				Plugin->ProcessDouble(ProcessBlock);
-			} else {
-				AudioProcessingBlock<float> ProcessBlock;
-				ProcessBlock.FramesPosition = 0;
-				ProcessBlock.FramesToProcess = SampleRendering;
-				ProcessBlock.Inputs = reinterpret_cast<float**>(inputs);
-				ProcessBlock.Outputs = reinterpret_cast<float**>(outputs);
-				ProcessBlock.Sidechain = nullptr;
-				Plugin->Process(ProcessBlock);
-			}
-
-			SampleFramesLeft -= SampleRendering;
-			CurrentSample += SampleRendering;
-		}
+{;
+	if (isDouble) {
+		AudioProcessingBlock<double> ProcessBlock;
+		ProcessBlock.FramesPosition = 0;
+		ProcessBlock.FramesToProcess = sampleFrames;
+		ProcessBlock.Inputs = reinterpret_cast<double**>(inputs);
+		ProcessBlock.Outputs = reinterpret_cast<double**>(outputs);
+		ProcessBlock.Sidechain = nullptr;
+		Plugin->ProcessDouble(ProcessBlock);
+	}
+	else {
+		AudioProcessingBlock<float> ProcessBlock;
+		ProcessBlock.FramesPosition = 0;
+		ProcessBlock.FramesToProcess = sampleFrames;
+		ProcessBlock.Inputs = reinterpret_cast<float**>(inputs);
+		ProcessBlock.Outputs = reinterpret_cast<float**>(outputs);
+		ProcessBlock.Sidechain = nullptr;
+		Plugin->Process(ProcessBlock);
 	}
 }
 
@@ -170,7 +152,10 @@ VST2Host::getEffectName(char* name)
 {
 	PluginInfo* Info = nullptr;
 	Plugin->GetPluginInfo(Info);
+	std::memset(name, 0, Info->Vendor.size() + 1);	// REAPER DEVELOPERS PLEASE FIX IT
 	Info->Name.copy(name, Info->Name.size());
+	name[Info->Name.size()] = 0;
+
 	return true;
 }
 
@@ -179,7 +164,10 @@ VST2Host::getVendorString(char* text)
 {
 	PluginInfo* Info = nullptr;
 	Plugin->GetPluginInfo(Info);
+	std::memset(text, 0, Info->Vendor.size() + 1);	// REAPER DEVELOPERS PLEASE FIX IT
 	Info->Vendor.copy(text, Info->Vendor.size());
+	text[Info->Name.size()] = 0;
+
 	return true;
 }
 
@@ -188,7 +176,10 @@ VST2Host::getProductString(char* text)
 {
 	PluginInfo* Info = nullptr;
 	Plugin->GetPluginInfo(Info);
+	std::memset(text, 0, Info->Vendor.size() + 1);	// REAPER DEVELOPERS PLEASE FIX IT
 	Info->Product.copy(text, Info->Product.size());
+	text[Info->Name.size()] = 0;
+
 	return true;
 }
 
@@ -264,6 +255,7 @@ void
 VST2Host::getParameterLabel(VstInt32 index, char* label)
 {
 	auto LabelString = Plugin->GetParameterLabelString(index);
+	std::memset(label, 0, LabelString.size() + 1);	// REAPER DEVELOPERS PLEASE FIX IT
 	LabelString.copy(label, LabelString.size());
 }
 
@@ -271,6 +263,7 @@ void
 VST2Host::getParameterDisplay(VstInt32 index, char* text)
 {
 	auto ValueString = Plugin->GetParameterValueString(index);
+	std::memset(text, 0, ValueString.size() + 1);	// REAPER DEVELOPERS PLEASE FIX IT
 	ValueString.copy(text, ValueString.size());
 }
 
@@ -278,6 +271,7 @@ void
 VST2Host::getParameterName(VstInt32 index, char* text)
 {
 	auto NameString = Plugin->GetParameterNameString(index);
+	std::memset(text, 0, NameString.size() + 1);	// REAPER DEVELOPERS PLEASE FIX IT
 	NameString.copy(text, NameString.size());
 }
 

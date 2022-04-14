@@ -1,6 +1,5 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
@@ -9,36 +8,37 @@
 
 struct DistortionState
 {
-	float Alpha = 0.f;
-	float Beta = 0.f;
+	double DeltaDriveLevel = 0.f;
+	double Alpha = 0.f;
+	double Beta = 0.f;
 };
 
 struct ShiftersState
 {
-	float BitcrusherPowerValue = 0.f;
+	double BitcrusherPowerValue = 0.;
 
-	float DownshifterStorageFloat = 0.f;
+	double DownshifterStorageFloat = 0.;
 	int32_t DownshifterStorageInt = 0;
 
-	float ADCFailureStorage = 0.f;
+	double ADCFailureStorage = 0.;
 };
 
 struct CompressorProcessState
 {
-	float Gate_ = 1.0f;
-	float Threshold_ = 1.0f;
-	float Ratio_orig = 1.0f;
-	float Attack_sec = 0.0f;
-	float Release_sec = 0.0f;
-	float SampleRate = 0.0f;
+	double Gate_ = 1.0;
+	double Threshold_ = 1.0;
+	double Ratio_orig = 1.0;
+	double Attack_sec = 0.0;
+	double Release_sec = 0.0;
+	double SampleRate = 0.0;
 	bool CompressModeB = true; 
 
-	float Envelope = FLT_EPSILON;
-	float Envelope2 = FLT_EPSILON;
-	float Threshold_db = 0.0f;
-	float Ratio_ = 1.0f;
-	float Attack_ = 0.0f;
-	float Release_ = 0.0f;
+	double Envelope = FLT_EPSILON;
+	double Envelope2 = FLT_EPSILON;
+	double Threshold_db = 0.0;
+	double Ratio_ = 1.0;
+	double Attack_ = 0.0;
+	double Release_ = 0.0;
 
 	PlanarBuffer<double> RMSBuffer1;
 	PlanarBuffer<double> RMSBuffer2;
@@ -111,7 +111,7 @@ private:
 	PluginInfo Info = {};
 
 private:
-	DynationProcessState ProcessState;
+	DynationProcessState ProcessState = {};
 	DynationState TempState = {};
 
 private:

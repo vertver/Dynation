@@ -1,11 +1,12 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
 #pragma once
 #include <cmath>
+
+constexpr double Pi = 3.14159265358979323846;
 
 // linear -> dB conversion
 inline double lin2dB(double lin)
@@ -53,12 +54,12 @@ inline float rlerp(float max, float min, float t)
 
 inline double sincurve(double x)
 {
-	return 1 - std::cos((x * 3.1415926535897932384) / 2);
+	return 1 - std::cos((x * Pi) / 2);
 }
 
 inline double rsincurve(double x)
 {
-	return std::acos(1 - x) * 2 / 3.1415926535897932384;
+	return std::acos(1 - x) * 2 / Pi;
 }
 
 inline double rlog10(double x)

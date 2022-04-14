@@ -35,8 +35,11 @@ if (DYNATION_BUILD_VST2)
 	endif()
 
 	file(GLOB DYNATION_VST2_SDK_SOURCE_CODE	
-		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/*.cpp"
-		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/*.h"
+		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/audioeffect.h"
+		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/audioeffect.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/audioeffectx.h"
+		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/audioeffectx.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/deps/VST2_SDK/public.sdk/source/vst2.x/aeffeditor.h"
 	)
 	
 	file(GLOB DYNATION_VST2_HOST_SOURCE_CODE
@@ -142,9 +145,7 @@ add_library(dynation STATIC
 target_link_libraries(dynation PUBLIC base)
 
 if (DYNATION_BUILD_VST2)
-	add_library(dynation_vst2 MODULE
-		${DYNATION_VST2_EXPORT_SOURCE_CODE}
-	)
+	add_library(dynation_vst2 SHARED ${DYNATION_VST2_EXPORT_SOURCE_CODE})
 
 	target_link_libraries(dynation_vst2 PRIVATE dynation)
 	target_include_directories(dynation_vst2 PRIVATE 

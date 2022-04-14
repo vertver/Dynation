@@ -1,6 +1,5 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
@@ -175,7 +174,6 @@ public:
                 return false;
             }
 
-            bool isVisited = true;
             std::visit([&](auto&& arg) {
                 using U = std::decay_t<decltype(arg)>;
                 OutValue = TypeConverter<U>::normalize(std::get<U>(Parameters[Index]), args...);
@@ -196,7 +194,6 @@ public:
                 return false;
             }
 
-            bool isVisited = true;
             std::visit([&](auto&& arg) {
                 using U = std::decay_t<decltype(arg)>;
                 Parameters[Index] = TypeConverter<U>::denormalize(OutValue, args...);

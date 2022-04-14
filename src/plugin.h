@@ -1,6 +1,5 @@
 /*******************************************************************************
 * Copyright (C) Anton Kovalev (vertver), 2018 - 2022. All rights reserved.
-* Copyright (C) Vladimir Shatrov (frowrik), 2018 - 2020. All rights reserved.
 * Dynation plugin
 * MIT License
 ***************************************************************************/
@@ -31,6 +30,9 @@ public:
 	virtual void BeginEdit(int32_t ParameterIndex) = 0;
 	virtual void PerformEdit(int32_t ParameterIndex, float NormalizedValue) = 0;
 	virtual void EndEdit(int32_t ParameterIndex) = 0;
+
+public:
+	virtual ~PluginNotifier() {}
 };
 
 class BaseView
@@ -50,6 +52,9 @@ public:
 
 public:
 	virtual bool InformResize(SRect& rect) = 0;
+
+public:
+	virtual ~BaseView() {}
 };
 
 struct PluginInfo
@@ -90,6 +95,9 @@ public:
 public:
 	virtual void Process(AudioProcessingBlock<float>& ProcessingBlock) = 0;
 	virtual void ProcessDouble(AudioProcessingBlock<double>& ProcessingBlock) = 0;
+
+public:
+	virtual ~BasePlugin() {}
 };
 
 extern bool CreatePluginInterface(BasePlugin*& OutPlugin, BaseView*& OutView);

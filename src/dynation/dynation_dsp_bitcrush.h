@@ -4,7 +4,6 @@
 * Dynation plugin
 * MIT License
 ***************************************************************************/
-#pragma once
 
 /***************************************************************
 *
@@ -52,7 +51,7 @@ auto ADCFailure = [](auto Input, auto& SaveLoadValue, auto Error) {
 		return Input;
 	}
 
-	auto RandPercent = (auto)(rand() % (100 + 1)) / 100.0;
+	auto RandPercent = static_cast<double>(rand() % (100 + 1)) / 100.0;
 	if (RandPercent < Error) {
 		return SaveLoadValue;
 	}
